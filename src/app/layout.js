@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "Sathish Diaries - Full Stack Developer | AI & SEO Freelancer",
+  title: "Sathish Kumar S - Full Stack Developer| MERN Stack developer | AI & SEO Freelancer",
   description:
     "Freelance Full Stack Developer specializing in MERN Stack, Python, AI Robotics, and SEO. Hire me for top-quality web development and automation.",
   keywords:
