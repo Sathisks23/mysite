@@ -1,68 +1,95 @@
-'use client'
-import React, { useState } from 'react'
-import axios from 'axios'
-const style = {
-    form :'w-96 ' ,
-    input :'w-full border-2 p-2 my-2',
-    submitBtn :'' 
-}
+"use client";
+import React, { useState } from "react";
+import axios from "axios";
 
-const Contactpage = () => {
-    const [contactDetail,setContact] = useState({
-        name:'', email:'',subject:'',message:''
-    })
-    const [successMessage,setsuccessMessage]  = useState('')
-    const [errorMessage,setErrorMessage] = useState('')
-    const [eventFinder,setFinder]=useState(false)
+const ContactPage = () => {
+  const [contactDetail, setContact] = useState({
+    name: "",
+    email: "",
+    subject: "",
+    message: "",
+  });
 
-    function inputHandler(){
-        event.preventDefault()
-        const name= event.target.name
-        const value= event.target.value
-        setContact({...contactDetail,[name]:value})
+  const [successMessage, setSuccessMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  function inputHandler(event) {
+    const { name, value } = event.target;
+    setContact({ ...contactDetail, [name]: value });
+  }
+
+  async function formHandler(event) {
+    event.preventDefault();
+    try {
+      setLoading(true);
+      const res = await axios.post("/api/addContact", contactDetail);
+      setSuccessMessage(res.data.message);
+      setTimeout(() => {
+        setSuccessMessage("");
+        setContact({ name: "", email: "", subject: "", message: "" });
+      }, 3000);
+    } catch (error) {
+      setErrorMessage(error.response?.data?.message || "Something went wrong.");
+    } finally {
+      setLoading(false);
     }
+  }
 
-    async function formHandler(){
-        event.preventDefault()
-        try {
-            setFinder(true)
-            const res =await axios.post('api/addContact',contactDetail) 
-            console.log(res.data.message,'res');
-            setsuccessMessage(res.data.message)
-            setTimeout(() => {
-                setsuccessMessage('')   
-                setContact({
-                    name:'', email:'',subject:'',message:''
-                })
-            }, 3000);
-        } catch (error) {
-            setErrorMessage(error.message)
-            console.log(error.message);
-            
-        }finally{
-            setFinder(false)
-        }
-        
-    }
   return (
-    <>
-    <div className='min-w-full h-screen'>
-        {successMessage && <p className='text-green-400'>{successMessage }</p>}
-        {errorMessage&&<p className='text-red-400'>{errorMessage}</p>}
-        <div className=' flex justify-center items-center  h-full'>
-            <form className={style.form} onSubmit={formHandler}>
-                <input className={style.input} name='name' type='text' placeholder='name' value={contactDetail.name} onChange={inputHandler} required/>
-                <input className={style.input}  name='email' type='email' placeholder='email' value={contactDetail.email} onChange={inputHandler} required/>
-                <input className={style.input}  name='subject' type='text' placeholder='subject' value={contactDetail.subject} onChange={inputHandler} required />
-                <textarea placeholder='message' name='message' className='border-2 p-2' value={contactDetail.message} rows={4} cols={35} onChange={inputHandler} />
-                <div className='text-center'>
-                 <input className=' border-2 p-2 w-1/2 ' type='submit' value={eventFinder? 'Sending...':'Send'} />
-                </div>
-            </form>
-        </div>
+    <div className="min-h-screen flex flex-col items-center justify-center p-6">
+      {successMessage && <p className="text-green-500 mb-4">{successMessage}</p>}
+      {errorMessage && <p className="text-red-500 mb-4">{errorMessage}</p>}
+      <div className="w-full max-w-md p-6 bg-white shadow-md rounded-lg">
+        <h2 className="text-2xl font-semibold text-center mb-4">Contact Me</h2>
+        <form className="space-y-4" onSubmit={formHandler}>
+          <input
+            className="w-full border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+            name="name"
+            type="text"
+            placeholder="Name"
+            value={contactDetail.name}
+            onChange={inputHandler}
+            required
+          />
+          <input
+            className="w-full border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+            name="email"
+            type="email"
+            placeholder="Email"
+            value={contactDetail.email}
+            onChange={inputHandler}
+            required
+          />
+          <input
+            className="w-full border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+            name="subject"
+            type="text"
+            placeholder="Subject"
+            value={contactDetail.subject}
+            onChange={inputHandler}
+            required
+          />
+          <textarea
+            className="w-full border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+            placeholder="Message"
+            name="message"
+            rows="4"
+            value={contactDetail.message}
+            onChange={inputHandler}
+            required
+          />
+          <button
+            type="submit"
+            className="w-full bg-black text-white py-2 rounded hover:bg-gray-800 transition"
+            disabled={loading}
+          >
+            {loading ? "Sending..." : "Send"}
+          </button>
+        </form>
+      </div>
     </div>
-    </>
-  )
-}
+  );
+};
 
-export default Contactpage
+export default ContactPage;
